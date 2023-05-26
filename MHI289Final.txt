@@ -1,0 +1,104 @@
+CREATE TABLE Patient (
+    patient_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    middle_name VARCHAR(50),
+    date_of_birth DATE NOT NULL,
+    gender CHAR(1) NOT NULL,
+    ssn CHAR(9),
+    address VARCHAR(255),
+    phone_number VARCHAR(20),
+    email_address VARCHAR(100)
+);
+
+CREATE TABLE Physician (
+    physician_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    middle_name VARCHAR(50),
+    specialty VARCHAR(100) NOT NULL,
+    medical_license_number VARCHAR(50) NOT NULL,
+    phone_number VARCHAR(20),
+    email_address VARCHAR(255)
+);
+
+CREATE TABLE Hospital (
+    hospital_id SERIAL PRIMARY KEY,
+    hospital_name VARCHAR(100) NOT NULL,
+    address VARCHAR(255),
+    phone_number VARCHAR(20),
+    email_address VARCHAR(100),
+    website_url VARCHAR(100),
+    location VARCHAR(100),
+    number_of_beds INTEGER,
+    hospital_type VARCHAR(50)
+);
+
+CREATE TABLE Medical_Image (
+    image_id SERIAL PRIMARY KEY,
+    image_name VARCHAR(100) NOT NULL,
+    date_taken DATE NOT NULL,
+    imaging_modality VARCHAR(50) NOT NULL,
+    image_file BYTEA NOT NULL,
+    image_format VARCHAR(50) NOT NULL,
+    image_size INTEGER NOT NULL,
+    image_resolution VARCHAR(20) NOT NULL,
+    image_orientation VARCHAR(50) NOT NULL,
+    image_description TEXT,
+    study_id INTEGER NOT NULL REFERENCES study(study_id)
+);
+
+CREATE TABLE Study (
+    study_id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL REFERENCES Patient(patient_id),
+    physician_id INTEGER NOT NULL REFERENCES Physician(physician_id),
+    study_date DATE NOT NULL,
+    study_description TEXT
+);
+
+CREATE TABLE Transaction (
+    transaction_id SERIAL PRIMARY KEY,
+    block_id INTEGER NOT NULL REFERENCES Block(block_id),
+    transaction_hash VARCHAR(100) NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    block_timestamp TIMESTAMP NOT NULL,
+    transaction_size INTEGER NOT NULL,
+    transaction_type VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Block (
+    block_id SERIAL PRIMARY KEY,
+    blockchain_id INTEGER NOT NULL REFERENCES Blockchain(blockchain_id),
+    block_height INTEGER NOT NULL,
+    number_of_nodes INTEGER NOT NULL
+);
+
+CREATE TABLE Blockchain (
+    blockchain_id SERIAL PRIMARY KEY,
+    blockchain_name VARCHAR(50) NOT NULL,
+    blockchain_network_address VARCHAR(100) NOT NULL,
+    network_type VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Access (
+    access_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES Patient(patient_id),
+    image_id INTEGER NOT NULL REFERENCES Medical_Image(image_id),
+    access_date DATE NOT NULL,
+    access_type VARCHAR(50) NOT NULL
+);
+CREATE TABLE Admission (
+    admission_id SERIAL PRIMARY KEY,
+    admission_date DATE NOT NULL,
+    patient_id INTEGER NOT NULL REFERENCES Patient(patient_id),
+    hospital_id INTEGER NOT NULL REFERENCES Hospital(hospital_id),
+    bed_number INTEGER,
+    discharge_date DATE,
+    admission_type VARCHAR(50)
+);
+
+CREATE TABLE Hospital_Physician (
+hospital_physician_id SERIAL PRIMARY KEY,
+hospital_id INTEGER NOT NULL REFERENCES Hospital(hospital_id),
+physician_id INTEGER NOT NULL REFERENCES Physician(physician_id)
+);
